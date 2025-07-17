@@ -53,7 +53,7 @@ jobs:
       # uv를 사용하여 의존성 패키지들을 설치합니다.
       - name: Install Packages & Libraries
         run: |
-          uv sync --dev-packages
+          uv sync --dev
 
       # isort를 사용하여 import 구문의 정렬 순서를 체크합니다.
       - name: Run isort (Import sorting)
