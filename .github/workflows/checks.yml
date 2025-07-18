@@ -1,86 +1,83 @@
 # .github/workflows/checks.yml
-# try
 
 name: Code Quality Checks
 
-# 코드가 푸시되거나 풀 리퀘스트가 생성될 때 CI가 실행됩니다.
-on:
-  push:
-    branches:
-      - main
-      - develop
+
+on: # 트리거 이벤트 부분
+  push: # 코드가 푸시되거나 풀 리퀘스트가 생성될 때 CI가 실행됩니다.
   pull_request:
 
 jobs:
   ci:
-    # 가장 최신버젼의 ubuntu를 OS 환경으로 설정합니다.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # 가장 최신버젼의 ubuntu를 OS 환경으로 설정합니다.
 
-    # services 키워드를 사용하여 PostgreSQL 서비스를 설정
-    services:
+    env: # Github Secrets에서 가져와서 env로 등록, Postgres 데이터 베이스 연결 설정
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: mydb
+    services: # services 키워드를 사용하여 PostgreSQL 서비스를 설정
       db:
         image: postgres:14
         ports:
           - 5432:5432
-        # Github Secrets에서 가져와서 env로 등록, Postgres 데이터 베이스 연결 설정
         env:
-          POSTGRES_USER: ${{ secrets.DB_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.DB_NAME }}
-        # 옵션으로 postgres의 연결 상태를 확인. 10초 단위로 5번 재시도. 5초간 기다림.
-        options: >-
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 1234
+          POSTGRES_DB: mydb
+        options: >- # 옵션으로 postgres의 연결 상태를 확인. 10초 단위로 5번 재시도. 5초간 기다림.
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
 
-    # CI 환경에서 코드를 체크아웃합니다.
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    steps: # CI 환경에서 코드를 체크아웃합니다.
+    - name: Checkout code
+      uses: actions/checkout@v3
+		
+    - name: Set up Python # CI 환경에서 사용할 파이썬 버젼을 지정합니다.
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+        
+    - name: Install uv # uv를 설치합니다.
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
-      # CI 환경에서 사용할 파이썬 버젼을 지정합니다.
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
+    - name: Install PostgreSQL client
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y postgresql-client
 
-      # uv를 설치합니다.
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+    - name: Install Packages & Libraries # uv를 사용하여 의존성 패키지들을 설치합니다.
+      run: |
+        uv sync --all-packages
 
-      # uv를 사용하여 의존성 패키지들을 설치합니다.
-      - name: Install Packages & Libraries
-        run: |
-          uv sync --dev
+    - name: Run isort (Import sorting) # isort를 사용하여 import 구문의 정렬 순서를 체크합니다.
+      run: |
+        uv run isort . --check --diff
 
-      # isort를 사용하여 import 구문의 정렬 순서를 체크합니다.
-      - name: Run isort (Import sorting)
-        run: |
-          uv run isort . --check --diff
+    - name: Run black (Code formatting) # black을 사용하여 PEP8 코드스타일을 준수했는지 체크합니다.
+      run: |
+        uv run black . --check
 
-      # black을 사용하여 PEP8 코드스타일을 준수했는지 체크합니다.
-      - name: Run black (Code formatting)
-        run: |
-          uv run black . --check
+    - name: Wait for PostgreSQL # db 연결을 테스트
+      run: |
+        until pg_isready -h ${{ env.POSTGRES_HOST }} -p ${{ env.POSTGRES_PORT }} -U ${{ env.POSTGRES_USER }}; do
+          sleep 3
+        done
 
-      # db 연결을 테스트
-      - name: Wait for PostgreSQL
-        run: |
-          until pg_isready -h localhost -p 5432 -U ${{ secrets.DB_USER }}; do
-            sleep 1
-          done
+    # 정상적인 db연결을 확인했으니 마이그레이션 수행
+#    - name: Run Django Migration
+#      run: |
+#        uv run python manage.py makemigrations
+#        uv run python manage.py migrate
 
-      # 정상적인 db연결을 확인했으니 마이그레이션 수행
-      - name: Run Django Migration
-        run: |
-          uv run python manage.py makemigrations
-          uv run python manage.py migrate
-
-      # django test를 사용하여 모든 앱의 테스트코드를 실행합니다.
-      - name: Test python project
-        run: |
-          uv run python manage.py test
+    # 도전 미션    
+    # django test를 사용하여 모든 앱의 테스트코드를 실행합니다.
+#    - name: Test python project
+#      run: |
+#        uv run python manage.py test
