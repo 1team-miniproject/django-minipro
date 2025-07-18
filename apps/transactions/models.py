@@ -1,5 +1,5 @@
 from django.db import models
-from common.models import CommonModel
+from apps.common.models import BaseModel
 
 TRANSACTION_IO_TYPE_CHOICES = [
     ("DEPOSIT", "입금"),
@@ -15,7 +15,7 @@ TRANSACTION_METHOD_CHOICES = [
     ("INTEREST", "이자"),
 ]
 
-class Transaction(CommonModel):
+class Transaction(BaseModel):
     id = models.BigIntegerField(primary_key=True)
     account_id = models.ForeignKey('accounts.Account', on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=15, decimal_places=2)
