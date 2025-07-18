@@ -5,6 +5,10 @@ build/
 dist/
 wheels/
 *.egg-info
-
+.env
 # Virtual environments
 .venv
+
+# SQLLite DB 파일
+db.sqlite3
+*.sqlite3
