@@ -8,8 +8,9 @@ dependencies = [
     "django>=5.2.4",
     "djangorestframework>=3.16.0",
 ]
-[project.optional-dependencies]
+
+[dependency-groups]
 dev = [
-    "black",
-    "isort",
+    "black>=25.1.0",
+    "isort>=6.0.1",
 ]
