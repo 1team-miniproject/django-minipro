@@ -37,3 +37,11 @@ class UserAdmin(BaseUserAdmin):
         if request.user.is_superuser:
             return self.readonly_fields
         return self.readonly_fields + ('email', 'is_staff', 'is_superuser')
+
+
+
+# Register your models here.
+
+
+
+
