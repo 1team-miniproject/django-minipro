@@ -8,7 +8,7 @@ wheels/
 .env
 # Virtual environments
 .venv
-
+.idea/
 # SQLLite DB 파일
 db.sqlite3
 *.sqlite3
