@@ -1,5 +1,5 @@
 from django.db import models
-from common.models import CommonModel
+from apps.common.models import BaseModel
 # Create your models here.
 
 BANK_CODES = [
@@ -108,11 +108,11 @@ ACCOUNT_TYPE = [
 ]
 
 
-class AccountsModel(CommonModel):
+class Account(BaseModel):
     id = models.BigAutoField(primary_key=True)
     user_id=models.ForeignKey('users.User', on_delete=models.CASCADE)
     account_number = models.CharField(max_length=50)
     bank_code = models.CharField(max_length=3, choices=BANK_CODES)
-    account_type =models.CharField(max_length=10, choices=ACCOUNT_TYPE)
+    account_type =models.CharField(max_length=20, choices=ACCOUNT_TYPE)
     balance = models.DecimalField(max_digits=15, decimal_places=2)
 

@@ -30,7 +30,6 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +40,8 @@ INSTALLED_APPS = [
     'apps.users',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
+    'apps.accounts.apps.AccountsConfig',
+    'apps.transactions.apps.TransactionsConfig',
 ]
 
 MIDDLEWARE = [
