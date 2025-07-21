@@ -22,8 +22,8 @@ class AccountListCreateApiView(APIView):  # 계좌 목록 조회 , 생성을 처
     )
     def get(self, request):  # 계좌 목록 조회
         # 유저의 계좌 목록 조회 API 작성
-        account = Account.objects.filter(user=request.user)
-        serializer = AccountSerializer(account, many=True)
+        accounts = Account.objects.filter(user_id=request.user.id)
+        serializer = AccountSerializer(accounts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
@@ -40,8 +40,9 @@ class AccountListCreateApiView(APIView):  # 계좌 목록 조회 , 생성을 처
         # 계좌 생성 API 작성
         serializer = AccountSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user)
+        serializer.save(user_id=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
 
 
 class AccountDeleteAPIView(APIView):  # 계좌 삭제 처리
