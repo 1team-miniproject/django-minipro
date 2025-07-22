@@ -6,3 +6,4 @@ class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account  # Account 모델을 직렬화
         fields = "__all__"
+        read_only_fields = ("user_id",)
