@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Account
-from .serializers import AccountSerializer
+# from .serializers import AccountSerializer
 
 
 class AccountListCreateApiView(APIView):  # 계좌 목록 조회 , 생성을 처리함
