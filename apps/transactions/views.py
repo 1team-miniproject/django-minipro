@@ -3,8 +3,10 @@ from .models import Transaction
 from rest_framework import status
 from rest_framework.response import Response
 from .serializers import TransactionSerializer
+from rest_framework.permissions import IsAuthenticated
 
 class TransactionAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     # 거래생성
     def post(self, request):
         serializer=TransactionSerializer(data=request.data)
@@ -27,13 +29,20 @@ class TransactionAPIView(APIView):
         account_obj.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    # 거래 조회
+    # 거래 조회 ( 전체 )
     def get(self, request):
         transactions=Transaction.objects.filter(account_id__user_id=request.user)
         serializer=TransactionSerializer(transactions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class TransactionDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    # 거래 조회
+    def get(self, request, pk):
+        transaction=Transaction.objects.get(pk=pk)
+        serializer=TransactionSerializer(transaction)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     # 거래 수정
     def put(self, request, pk):
         obj = Transaction.objects.get(pk=pk)

@@ -10,6 +10,7 @@ from apps.users.models import User
 pytestmark = pytest.mark.django_db
 
 class TransactionSerializer(serializers.ModelSerializer):
+    balance_after_transaction = serializers.IntegerField(read_only=True)
     class Meta:
         model = Transaction
         fields = '__all__'
