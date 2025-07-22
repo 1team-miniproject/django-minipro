@@ -58,6 +58,7 @@ class AccountDeleteAPIView(APIView):  # 계좌 삭제 처리
         },
         tags=["accounts"],
     )
-    def delete(self, request, pk): # 계좌 삭제
-        # 계좌 삭제 API 작성
-        pass
+    def delete(self, request, pk): # 계좌 삭제 def
+        account_obj = get_object_or_404(Account, pk=pk, user_id=request.user.id)
+        account_obj.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
