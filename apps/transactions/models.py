@@ -16,7 +16,7 @@ TRANSACTION_METHOD_CHOICES = [
 ]
 
 class Transaction(BaseModel):
-    id = models.BigAutoField(primary_key=True)
+    # id = models.BigAutoField(primary_key=True)
     account_id = models.ForeignKey('accounts.Account', on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=15, decimal_places=2)
     balance_after_transaction = models.DecimalField(max_digits=15, decimal_places=2)
