@@ -4,8 +4,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from .serializers import TransactionSerializer
 from drf_spectacular.utils import extend_schema, OpenApiResponse
+from rest_framework.permissions import IsAuthenticated
 
 class TransactionAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     @extend_schema(
         summary="거래 생성",
         description="입출금 거래 생성",
@@ -54,6 +56,7 @@ class TransactionAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class TransactionDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     @extend_schema(
         summary="거래 수정",
         description="특정 거래 내역을 수정",
